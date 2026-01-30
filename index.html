@@ -76,11 +76,22 @@
             color: #ff4d4d;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--at-blue); }
+        .copy-btn {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            color: var(--at-blue);
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--at-blue);
+            color: black;
+        }
+
+        .tooltip-visible {
+            opacity: 1;
+            transform: translateY(-5px);
+        }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
@@ -92,7 +103,6 @@
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tighter text-white">
@@ -113,7 +123,6 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Issuance Form -->
             <div class="lg:col-span-1">
                 <div class="glass-panel p-6 sticky top-8 border-l-4 border-l-[#00d4ff]">
                     <h2 class="text-lg font-semibold mb-6 flex items-center gap-2">
@@ -146,13 +155,12 @@
                 </div>
             </div>
 
-            <!-- License Table -->
             <div class="lg:col-span-3">
                 <div class="glass-panel overflow-hidden">
                     <div class="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
-                        <h2 class="text-lg font-semibold">Registry Registry</h2>
+                        <h2 class="text-lg font-semibold">Registry</h2>
                         <div class="flex items-center gap-3">
-                             <span class="text-[10px] text-gray-500 italic">Click row to expand</span>
+                             <span class="text-[10px] text-gray-500 italic">Click row to expand details</span>
                              <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20 font-bold tracking-widest animate-pulse">LIVE SYNC</span>
                         </div>
                     </div>
@@ -163,37 +171,22 @@
                                 <tr>
                                     <th class="px-6 py-4">Client / Individual</th>
                                     <th class="px-6 py-4">Key ID (56 Chars)</th>
-                                    <th class="px-6 py-4">Linked Devices</th>
+                                    <th class="px-6 py-4">Devices</th>
                                     <th class="px-6 py-4 text-center">Status</th>
                                     <th class="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="licenseTbody">
-                                <!-- Dynamic Content -->
-                            </tbody>
+                            <tbody id="licenseTbody"></tbody>
                         </table>
                     </div>
                     <div id="emptyState" class="p-20 text-center text-gray-600 hidden">
-                        No licenses found in database.
-                    </div>
-                </div>
-                
-                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-4 glass-panel border-dashed border-gray-700">
-                        <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Integration Snippet:</h4>
-                        <p class="text-[11px] text-gray-400 mb-2 font-mono">/licenses/{key}/hardware/{hwid}</p>
-                        <p class="text-[10px] text-gray-500 italic">Send device stats to this folder to track multiple logins per user.</p>
-                    </div>
-                    <div class="p-4 glass-panel border-dashed border-red-900/30 bg-red-900/5">
-                        <h4 class="text-xs font-bold text-red-500 uppercase mb-2">Security Engine:</h4>
-                        <p class="text-[11px] text-gray-400">Dashboard automatically flags licenses detected on 2+ unique hardware IDs.</p>
+                        No licenses found.
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -220,6 +213,29 @@
             return result;
         };
 
+        window.copyKey = (e, key) => {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            const originalHtml = btn.innerHTML;
+            
+            const textArea = document.createElement("textarea");
+            textArea.value = key;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                btn.innerHTML = '<span class="text-[9px] font-bold">COPIED</span>';
+                btn.classList.add('bg-white', 'text-black');
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('bg-white', 'text-black');
+                }, 1500);
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(textArea);
+        };
+
         window.handleIssue = async () => {
             const org = document.getElementById('orgInput').value.trim();
             const user = document.getElementById('userInput').value.trim();
@@ -234,7 +250,7 @@
                 org, user,
                 active: true,
                 issuedAt: new Date().toISOString(),
-                hardware: {} // Folder for multiple device links
+                hardware: {}
             };
 
             try {
@@ -251,7 +267,7 @@
         };
 
         window.toggleStatus = async (e, key, currentStatus) => {
-            e.stopPropagation(); // Don't expand row when clicking button
+            e.stopPropagation();
             try {
                 await update(ref(db, 'licenses/' + key), { active: !currentStatus });
                 logActivity(`${currentStatus ? 'REVOKED' : 'RESTORED'} Key ...${key.slice(-6)}`);
@@ -294,14 +310,11 @@
             keys.forEach(key => {
                 const item = data[key];
                 total++; if (item.active) active++;
-
                 const hardwareList = item.hardware ? Object.keys(item.hardware) : [];
                 const hardwareCount = hardwareList.length;
                 const isFlagged = hardwareCount >= 2;
-
                 const rowId = key.substring(0, 8);
 
-                // Main Row
                 const mainRow = document.createElement('tr');
                 mainRow.className = 'license-row group border-b border-white/5';
                 mainRow.onclick = () => toggleExpand(rowId);
@@ -311,12 +324,17 @@
                         <div class="text-[11px] text-blue-400/70 font-medium">${item.user}</div>
                     </td>
                     <td class="px-6 py-5">
-                        <span class="mono text-[9px] bg-black px-2 py-1.5 rounded border border-white/10 text-gray-500 select-all tracking-tighter">${key}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="mono text-[9px] bg-black px-2 py-1.5 rounded border border-white/10 text-gray-500 tracking-tighter">${key}</span>
+                            <button onclick="copyKey(event, '${key}')" class="copy-btn p-1.5 rounded flex items-center justify-center" title="Copy Key">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                            </button>
+                        </div>
                     </td>
                     <td class="px-6 py-5">
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-semibold ${isFlagged ? 'text-red-400' : 'text-gray-400'}">${hardwareCount} Devices</span>
-                            ${isFlagged ? '<span class="text-[9px] flag-warning px-2 py-0.5 rounded-full font-bold animate-pulse">! SECURITY FLAG</span>' : ''}
+                            <span class="text-xs font-semibold ${isFlagged ? 'text-red-400' : 'text-gray-400'}">${hardwareCount}</span>
+                            ${isFlagged ? '<span class="text-[8px] flag-warning px-1.5 py-0.5 rounded-full font-bold">FLAG</span>' : ''}
                         </div>
                     </td>
                     <td class="px-6 py-5 text-center">
@@ -332,7 +350,6 @@
                     </td>
                 `;
 
-                // Expandable Detail Row
                 const detailRow = document.createElement('tr');
                 detailRow.id = 'details-' + rowId;
                 detailRow.className = 'hidden expanded-details';
@@ -341,22 +358,17 @@
                     ? hardwareList.map(hwid => `
                         <div class="p-3 bg-black/40 rounded border border-white/5 flex flex-col gap-1">
                             <span class="text-[10px] text-blue-400 font-mono">ID: ${hwid}</span>
-                            <span class="text-[11px] text-gray-300">${item.hardware[hwid].stats || 'No detail available'}</span>
-                            <span class="text-[9px] text-gray-600 italic">Linked: ${new Date(item.hardware[hwid].linkedAt).toLocaleString()}</span>
+                            <span class="text-[11px] text-gray-300">${item.hardware[hwid].stats || 'No detail'}</span>
+                            <span class="text-[9px] text-gray-600">Link: ${new Date(item.hardware[hwid].linkedAt).toLocaleString()}</span>
                         </div>
                     `).join('')
-                    : `<div class="text-xs text-gray-600 italic">No devices currently linked to this user.</div>`;
+                    : `<div class="text-xs text-gray-600 italic">No devices linked.</div>`;
 
                 detailRow.innerHTML = `
                     <td colspan="5" class="p-6">
                         <div class="animate-fadeIn">
-                            <h4 class="text-[10px] uppercase font-bold text-gray-500 mb-4 tracking-widest flex items-center gap-2">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 002-2h-2a2 2 0 00-2 2"></path></svg>
-                                Hardware Fingerprints
-                            </h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                ${hardwareMarkup}
-                            </div>
+                            <h4 class="text-[10px] uppercase font-bold text-gray-500 mb-4 tracking-widest">Hardware Fingerprints</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${hardwareMarkup}</div>
                         </div>
                     </td>
                 `;
@@ -364,7 +376,6 @@
                 tbody.appendChild(mainRow);
                 tbody.appendChild(detailRow);
             });
-
             updateStats(total, active);
         });
 
