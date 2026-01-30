@@ -100,16 +100,15 @@ Tailored QR attendance solution for DepEd SF2 forms — Dr. Alfredo Pio De Roda 
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/1-qr-generator-loaded.png" alt="QR Generator – File Loaded & Ready" width="45%"/>
-  <img src="screenshots/2-scanner-in-action.png" alt="Scanner – Live QR Scanning" width="45%"/>
+  <img src="Screenshot 2026-01-30 201611.png" alt="QR Generator – File Loaded & Ready" width="45%"/>
+  <img src="Screenshot 2026-01-30 201723.png" alt="Scanner – Live QR Scanning" width="45%"/>
 </p>
 
 <p align="center">
-  <img src="screenshots/3-preview-tab.png" alt="Preview Tab – Scanned Students & Status" width="45%"/>
-  <img src="screenshots/4-settings-license.png" alt="Settings Tab – License & Folder Info" width="45%"/>
+  <img src="Screenshot 2026-01-30 201800.png" alt="Preview Tab – Scanned Students & Status" width="45%"/>
+  <img src="image4.png" alt="Settings Tab – License & Folder Info" width="45%"/>
 </p>
 
-> Add your real screenshots to a `screenshots/` folder in the repo and update paths.
 
 **100% human-written code**  
 Athan Meir — Tanza, Calabarzon, Philippines — January 30, 2026
