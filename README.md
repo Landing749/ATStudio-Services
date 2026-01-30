@@ -2,7 +2,7 @@
 **Dr. Alfredo Pio De Roda Elementary School Edition**
 
 <p align="center">
-  <img src="https://via.placeholder.com/1280x320/0f1419/3b82f6?text=QR+Attendance+System+v6+%7C+Jan+2026" alt="QR Attendance System Banner" width="90%"/>
+  <img src="banner.png" alt="QR Attendance System Banner" width="90%"/>
 </p>
 
 <p align="center">
