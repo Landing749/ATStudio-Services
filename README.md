@@ -1,3 +1,6 @@
+# QR Attendance System  
+**Dr. Alfredo Pio De Roda Elementary School Edition**
+
 <p align="center">
   <img src="https://via.placeholder.com/1280x320/0f1419/3b82f6?text=QR+Attendance+System+v6+%7C+Jan+2026" alt="QR Attendance System Banner" width="90%"/>
 </p>
@@ -10,292 +13,103 @@
   <img src="https://img.shields.io/badge/Code-100%25_Human_Written-2ecc71?style=for-the-badge&logo=code&logoColor=white" alt="Fully human written">
 </p>
 
-Modern QR-code based attendance system built specifically for DepEd School Form 2 (SF2) daily attendance sheets.  
-Designed and developed for **Dr. Alfredo Pio De Roda Elementary School**, Tanza, Calabarzon, Philippines (January 2026).
-
-Features strong Firebase-based licensing, hardware fingerprinting to prevent sharing, EULA enforcement, offline caching, real-time revocation, corrupted Excel auto-repair, threaded camera for smooth scanning, and a clean dark-themed Tkinter interface.
-
-## ✨ Detailed Feature Overview
-
-| Category                  | Feature                                                                 | Technical Details & Benefits                                                                                          | Status |
-|---------------------------|-------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|--------|
-| **QR Code Generator**     | Batch QR generation from SF2 Excel                                      | Extracts student names from Column B (row 13+), applies strict validation filter (excludes headers, formulas, dates, totals, gender summaries, etc.) | ✓      |
-|                           | High-reliability QR codes                                               | Uses `qrcode` library with ERROR_CORRECT_H → tolerant to printing damage, dirt, or poor lighting                       | ✓      |
-|                           | Smart name filtering                                                    | Rejects patterns like "SUMIF", "TOTAL MALE", "AVERAGE DAILY", dates, numbers-only, short strings, etc.               | ✓      |
-|                           | Progress bar & status feedback                                          | Real-time progress bar, status label updates during generation                                                        | ✓      |
-| **Attendance Scanner**    | Real-time webcam QR scanning                                            | Threaded OpenCV + pyzbar → no UI freeze, 30 FPS target, frame queue for smooth performance                           | ✓      |
-|                           | Automatic date column detection                                         | Scans row 11 for today's day number, uses matching column (handles DepEd SF2 layout perfectly)                       | ✓      |
-|                           | Existing mark detection & duplicate prevention                          | Checks current "✓" in column + 1-second rescan cooldown per student                                                   | ✓      |
-|                           | Auto-save after every scan                                              | Immediate `workbook.save()` after each valid scan, with file-lock check via rename trick                              | ✓      |
-|                           | Live counters (present/absent/total)                                    | Combines pre-existing marks + new scans for accurate real-time statistics                                            | ✓      |
-|                           | Corrupted Excel auto-repair                                             | If `[Content_Types].xml` missing → unzips, re-zips file structure automatically                                       | ✓      |
-| **Licensing & Security**  | Firebase Realtime Database licensing                                    | One-time key entry → saved forever in `~/.attendance_system/license.json`                                            | ✓      |
-|                           | Real-time revocation (kill switch)                                      | Polls `active` flag every ~10 seconds → exits immediately if set to `false`                                          | ✓      |
-|                           | Hardware fingerprinting & anti-sharing                                  | SHA-256 hash of MAC/UUID + OS/CPU/RAM stats → reports to `/licenses/{key}/hardware` → detects >1 device              | ✓      |
-|                           | Persistent HWID counter                                                 | Increments device count (PRIMARY → SECONDARY → …) stored in `hwid_counter.txt`                                       | ✓      |
-|                           | Offline mode with caching                                               | Uses `licenses_cache.json` when offline → shows warning but continues working                                        | ✓      |
-|                           | EULA acceptance modal on first run                                      | Scrollable text dialog, mandatory checkbox, saved in `eula_accepted.txt`                                             | ✓      |
-| **User Interface**        | Modern dark theme                                                       | #0f1419 background, #1a202c cards, #3b82f6 accents, color-coded status (green/red/yellow)                           | ✓      |
-|                           | Tabbed layout                                                           | Scan (camera + preview), Files (browser), Preview (student list + status), Settings (license info & folders)         | ✓      |
-|                           | File auto-load & folder integration                                     | Auto-loads first .xlsx from `~/SF2_Files/Active/` on startup                                                        | ✓      |
-|                           | Visual feedback                                                         | Camera feed with green QR outline, live counters, warning popups, console logging                                    | ✓      |
-
-## 📂 Folder Structure (Created Automatically)
-~/SF2_Files/
-├── Active/                     # Put your working SF2 .xlsx files here (app auto-loads first one)
-├── QR_Codes/                   # Generated QR PNG files (named after student e.g. Juan_Dela_Cruz.png)
-└── .attendance_system/         # Hidden config folder (do not delete unless resetting license)
-├── license.json            # Saved license key + data
-├── eula_accepted.txt       # Timestamp of EULA acceptance
-├── licenses_cache.json     # Offline copy of Firebase licenses
-└── hwid_counter.txt        # Current device count for this license (1 = PRIMARY, 2 = SECONDARY…)
-text## 🚀 Quick Start
-
-1. Make sure you have Python 3.8+ installed
-
-2. Create virtual environment (recommended)
-bash
-python -m venv venv
-source venv/bin/activate      # Linux/macOS
-# or
-venv\Scripts\activate         # Windows
-
-Install dependencies
-
-Bashpip install -r requirements.txt
-# or manually:
-pip install openpyxl qrcode[pil] pyzbar opencv-python pillow requests psutil
-
-Run the programs
-
-Bash# Generate QR codes
-python qr_generator_IMPROVED.py
-
-# Run attendance system (with licensing)
-python attendance_system_WITH_FIREBASE_LICENSING_V2.py
-🔒 License Anti-Sharing & Revocation Flow (Detailed)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-StepActionLocation / MethodConsequence if Failed / DetectedNotes / Timing1App launchLocal——2Check for saved license & EULA files~/.attendance_system/Missing → show EULA + license entry modalOne-time only3User accepts EULA + enters license keyTkinter modal dialogKey saved forever in license.jsonNever asked again4Validate key against FirebaseGET /licenses/{key}.jsonNot found / active:false → error & exitFalls back to cache if offline5Collect hardware fingerprintLocal (MAC hash + CPU/RAM/OS info)—SHA-256 truncated to 16 chars6Report hardware data to FirebasePUT /licenses/{key}/hardware—Merges with existing entries7Count number of HWID entries under licenseRead /hardware object length>1 → sharing detected (console warning)Labels: PRIMARY, SECONDARY, …8Periodic license check (every ~10 seconds)root.after(10000, verify_function)active = false → immediate graceful exitMost powerful revocation mechanism9Offline fallbackLoad from licenses_cache.jsonContinues with last known good state + "Offline" warningCache updated on successful online fetch10Sharing / revocation detectedLocal logic after Firebase responseShow message (if UI still responsive) → sys.exit()Almost instant (<1s after poll)
-🛠️ Expanded Troubleshooting Guide
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#Problem DescriptionLikely Causes (Most → Least Common)Step-by-Step FixPrevention / Best Practice1Camera does not open / black screenPermissions denied, no webcam, wrong index1. Check privacy settings
-2. Test index 0,1,2…
-3. ls /dev/video* (Linux)Use external USB webcam if built-in problematic2"Excel file is open" warning every scanSF2 open in Microsoft ExcelClose Excel completely (check Task Manager)Train users: close file before scanning3App exits immediately after launchLicense revoked or multiple devices detected1. Check Firebase active field
-2. Delete local license.json to re-enter keyMonitor hardware entries in Firebase console4No students appear in listWrong column, filtered out, bad SF2 format1. Confirm names in Column B row 13+
-2. Temporarily disable some filters in is_valid_student_nameUse official DepEd SF2 template5QR codes not scanning reliablyPoor print quality, bad lighting, camera focus1. Regenerate with larger box_size
-2. Improve lighting
-3. Hold 10–20 cm awayLaminate QR codes, use matte sticker paper6"Corrupted file" message & repair failsDamaged zip structure in .xlsx1. Restore from backup
-2. Open in Excel → Save As new fileBackup Active folder weekly7License validation fails even with internetWrong Firebase config, firewall, database rules1. Verify FIREBASE_CONFIG values
-2. Test URL in browser
-3. Check firewall/proxyUse school/office Wi-Fi for first validation8App freezes / very slow scanningLarge SF2 file, low RAM, old CPU1. Reduce student count per file
-2. Close other programs
-3. Increase sleep time in threadSplit classes into separate SF2 files9EULA / license not savingNo write permission in home directory1. Run as administrator once
-2. Check folder permissions
-3. Manually create .attendance_systemAvoid running from restricted network drives10"Offline mode" stays foreverNo internet ever, cache corrupted1. Connect to internet
-2. Delete licenses_cache.json
-3. Restart appValidate license online at least once a month11Multiple HWIDs appear under one licenseSame key used on different computers1. Revoke in Firebase
-2. Issue new key
-3. Educate users not to share keyUse unique keys per teacher/computer12Console shows many "⚠️ Error …" messagesNetwork timeout, Firebase unreachableUsually harmless if offline mode works — ignore unless app misbehavesAdd logging to file if needed for support
-When asking for help (e.g. opening an issue):
-Please include:
-
-Exact error message / popup text
-Console output (copy-paste last 10–20 lines)
-Your operating system + Python version
-Whether you were online or offline at the time of the issue
-Steps you already tried
-
-📸 Screenshots
-
-  QR Code Generator - File Loaded and Ready
-  Attendance Scanner - Live Scanning in Progress
-
-
-  Preview Tab - Scanned Students List & Status
-  Settings Tab - License & Folder Information
-
-Replace the placeholder paths (screenshots/...) with your actual screenshot files once you add them to the repository.
-📜 License & Legal Notice
-This software is provided exclusively for educational use at Dr. Alfredo Pio De Roda Elementary School.
-Any form of unauthorized redistribution, commercial use, reverse engineering, or removal of licensing/hardware checks is strictly prohibited.
-
-100% human-written code
-Created by Athan Meir
-Tanza, Calabarzon, Philippines
-January 30, 2026
+Tailored QR attendance solution for DepEd SF2 forms — Dr. Alfredo Pio De Roda ES, Tanza, Calabarzon, Philippines (Jan 2026)
+
+## Core Features Overview
+
+| Category                  | Feature                                      | Description / Benefit                                                                                     | Status |
+|---------------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------------------|--------|
+| QR Code Generator         | Batch QR from SF2 Excel                      | Extracts names from Column B (row 13+), strict filtering (skips headers, formulas, totals, dates, etc.)   | ✓      |
+|                           | High-reliability QR codes                    | ERROR_CORRECT_H level — tolerant to damage, poor print quality, low light                                 | ✓      |
+|                           | Smart name validation                        | Rejects invalid patterns ("SUMIF", "TOTAL MALE", "NAN", numbers-only, short strings, etc.)                | ✓      |
+|                           | Real-time progress & status                  | Progress bar + status label during generation                                                             | ✓      |
+| Attendance Scanner        | Threaded real-time QR scanning               | OpenCV + pyzbar, no UI freeze, ~30 FPS, frame queue                                                       | ✓      |
+|                           | Auto date-column detection                   | Reads row 11, marks correct column in DepEd SF2 layout                                                    | ✓      |
+|                           | Existing mark detection                      | Prevents overwriting already present "✓"                                                                 | ✓      |
+|                           | Duplicate / rapid rescan prevention          | 1-second cooldown per student                                                                             | ✓      |
+|                           | Auto-save per scan                           | Immediate save + file-lock check (rename trick)                                                           | ✓      |
+|                           | Live attendance counters                     | Present / Absent / Total — combines existing + new scans                                                  | ✓      |
+|                           | Corrupted .xlsx auto-repair                  | Fixes missing `[Content_Types].xml` by unzip/rezip                                                        | ✓      |
+| Licensing & Security      | Firebase Realtime Database licensing         | One-time key entry, saved forever locally                                                                 | ✓      |
+|                           | Real-time revocation                         | Polls `active` flag every ~10 s → instant exit if revoked                                                 | ✓      |
+|                           | Hardware fingerprinting                      | SHA-256 (MAC/UUID + OS/CPU/RAM) → detects sharing                                                         | ✓      |
+|                           | Persistent HWID counter                      | PRIMARY → SECONDARY → … (saved in hwid_counter.txt)                                                       | ✓      |
+|                           | Offline mode with caching                    | Uses `licenses_cache.json` when offline, shows warning                                                    | ✓      |
+|                           | EULA modal on first run                      | Scrollable text, mandatory checkbox, saved acceptance                                                    | ✓      |
+| User Interface            | Modern dark theme                            | #0f1419 BG, #1a202c cards, #3b82f6 accents, color-coded status                                            | ✓      |
+|                           | Tabbed layout                                | Scan (camera), Files (browser), Preview (list), Settings (license/folders)                                | ✓      |
+|                           | Auto-load active SF2                         | Loads first .xlsx from `~/SF2_Files/Active/` on startup                                                   | ✓      |
+|                           | Visual scanning feedback                     | Green QR outline on camera feed, live counters, warning popups                                            | ✓      |
+
+## Folder Structure (Auto-created)
+
+| Folder / File                        | Purpose                                                                                   |
+|--------------------------------------|-------------------------------------------------------------------------------------------|
+| `~/SF2_Files/Active/`                | Place current SF2 .xlsx files here (app auto-loads first one)                             |
+| `~/SF2_Files/QR_Codes/`              | Generated student QR PNGs (named after student e.g. Juan_Dela_Cruz.png)                   |
+| `~/.attendance_system/license.json`  | Saved license key + data                                                                  |
+| `~/.attendance_system/eula_accepted.txt` | EULA acceptance timestamp                                                              |
+| `~/.attendance_system/licenses_cache.json` | Offline cache of Firebase licenses                                                     |
+| `~/.attendance_system/hwid_counter.txt` | Hardware ID counter for sharing detection                                             |
+
+## Quick Start Steps
+
+| Step | Action                                                                 | Command / Note                                           |
+|------|------------------------------------------------------------------------|----------------------------------------------------------|
+| 1    | Ensure Python 3.8+ is installed                                        | Download from python.org if needed                       |
+| 2    | Create virtual environment (recommended)                               | `python -m venv venv`                                    |
+| 3    | Activate environment                                                   | Linux/macOS: `source venv/bin/activate`<br>Windows: `venv\Scripts\activate` |
+| 4    | Install dependencies                                                   | `pip install -r requirements.txt`                        |
+| 5    | Generate student QR codes                                              | `python qr_generator_IMPROVED.py`                        |
+| 6    | Launch attendance scanner (with licensing)                             | `python attendance_system_WITH_FIREBASE_LICENSING_V2.py` |
+
+## License Anti-Sharing & Revocation Flow
+
+| Step | Action                                      | Location / Method                          | Consequence if Failed / Detected                          | Notes / Timing                     |
+|------|---------------------------------------------|--------------------------------------------|------------------------------------------------------------|------------------------------------|
+| 1    | App launch                                  | Local                                      | —                                                          | —                                  |
+| 2    | Check saved license & EULA files            | `~/.attendance_system/`                    | Missing → show EULA + license modal                        | One-time only                      |
+| 3    | User accepts EULA + enters key              | Tkinter modal                              | Key saved forever in `license.json`                        | Never asked again                  |
+| 4    | Validate key against Firebase               | `GET /licenses/{key}.json`                 | Not found / `active:false` → exit                          | Falls back to cache if offline     |
+| 5    | Collect hardware fingerprint                | Local (MAC hash + CPU/RAM/OS)              | —                                                          | SHA-256 truncated to 16 chars      |
+| 6    | Report hardware data                        | `PUT /licenses/{key}/hardware`             | —                                                          | Merges with existing entries       |
+| 7    | Count HWID entries under license            | Read `/hardware` object length             | >1 → sharing detected (console warning)                    | PRIMARY, SECONDARY… labels         |
+| 8    | Periodic check (~every 10 s)                | `root.after(10000, …)`                     | `active` = false → immediate exit                          | Strongest revocation method        |
+| 9    | Offline fallback                            | `licenses_cache.json`                      | Continues + "Offline mode" warning                         | Cache updated when online          |
+| 10   | Sharing / revocation detected               | Local logic after Firebase response        | Show message → `sys.exit()`                                | <1 s after poll                    |
+
+## Troubleshooting Guide
+
+| #  | Problem                                      | Most Likely Cause(s)                          | Step-by-Step Fix                                                                 | Prevention / Best Practice                        |
+|----|----------------------------------------------|-----------------------------------------------|----------------------------------------------------------------------------------|---------------------------------------------------|
+| 1  | Camera black / won't open                    | Permissions, no device, wrong index           | Check privacy settings → test indices 0,1,2… → `ls /dev/video*` (Linux)          | Use external USB webcam if built-in fails         |
+| 2  | "Excel file is open" warning                 | SF2 open in Excel                             | Close Excel (check Task Manager)                                                 | Always close file before scanning                 |
+| 3  | App exits immediately                        | Revoked license or sharing detected           | Check `active` in Firebase → delete local `license.json` to re-enter             | Monitor hardware entries in Firebase              |
+| 4  | No students loaded                           | Wrong column / filtered out                   | Names in Col B row 13+ → temp disable filters in `is_valid_student_name`         | Follow official DepEd SF2 template                |
+| 5  | QR scanning unreliable                       | Bad print, lighting, distance                 | Regenerate larger → better light → hold 10–20 cm                                 | Laminate, use matte sticker paper                 |
+| 6  | Corrupted file warning & repair fails        | Damaged .xlsx zip structure                   | Restore backup → open in Excel → Save As new                                     | Weekly backup of Active folder                    |
+| 7  | License validation fails (online)            | Wrong config, firewall, DB rules              | Verify `FIREBASE_CONFIG` → test URL → check firewall/proxy                       | Use school Wi-Fi for first validation             |
+| 8  | App freezes / slow scanning                  | Large file, low RAM, old hardware             | Reduce students per file → close apps → increase thread sleep                    | Split large classes into multiple SF2 files       |
+| 9  | EULA/license not saving                      | No write permission                           | Run as admin once → check folder perms → create `.attendance_system` manually    | Avoid restricted/network drives                   |
+| 10 | Stuck in "Offline mode"                      | No internet, corrupted cache                  | Connect → delete `licenses_cache.json` → restart                                 | Validate online at least monthly                  |
+| 11 | Multiple HWIDs under one license             | Key shared across computers                   | Revoke in Firebase → issue new key → educate users                               | Unique keys per teacher/device                    |
+| 12 | Many "⚠️ Error" messages in console          | Network timeout / Firebase unreachable        | Usually safe if offline mode works — ignore unless malfunction                   | Add file logging if support needed                |
+
+**When reporting issues** — include: error text, console output (last 10–20 lines), OS + Python version, online/offline status, steps tried.
+
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/1-qr-generator-loaded.png" alt="QR Generator – File Loaded & Ready" width="45%"/>
+  <img src="screenshots/2-scanner-in-action.png" alt="Scanner – Live QR Scanning" width="45%"/>
+</p>
+
+<p align="center">
+  <img src="screenshots/3-preview-tab.png" alt="Preview Tab – Scanned Students & Status" width="45%"/>
+  <img src="screenshots/4-settings-license.png" alt="Settings Tab – License & Folder Info" width="45%"/>
+</p>
+
+> Add your real screenshots to a `screenshots/` folder in the repo and update paths.
+
+**100% human-written code**  
+Athan Meir — Tanza, Calabarzon, Philippines — January 30, 2026
