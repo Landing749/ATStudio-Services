@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Attendance System v6.15.57</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --light-blue: #60a5fa;
+            --soft-bg: #f8fafc;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            margin: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: move 20s infinite alternate;
+        }
+        .orb-1 { width: 400px; height: 400px; background: #dbeafe; top: -100px; right: -100px; }
+        .orb-2 { width: 500px; height: 500px; background: #eff6ff; bottom: -200px; left: -100px; animation-delay: -5s; }
+        
+        @keyframes move {
+            from { transform: translate(0, 0); }
+            to { transform: translate(50px, 100px); }
+        }
+
+        .wrapper {
+            padding: 40px 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 40px;
+            box-shadow: 0 40px 80px -20px rgba(37, 99, 235, 0.1);
+            width: 100%;
+            max-width: 440px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-box {
+            width: 90px;
+            height: 90px;
+            background: #ffffff;
+            border-radius: 28px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(255, 255, 255, 1);
+            position: relative;
+        }
+
+        .download-btn {
+            padding: 16px 24px;
+            border-radius: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
+            color: white;
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: rotate(45deg);
+            transition: 0.6s;
+        }
+        .btn-primary:hover::after { left: 100%; }
+        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 15px 30px -12px rgba(37, 99, 235, 0.4); }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+        .btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+        .step-pill {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center; gap: 14px; text-align: left;
+        }
+
+        .step-num {
+            font-weight: 800; color: var(--primary-blue); font-size: 0.75rem;
+            background: #eff6ff; min-width: 24px; height: 24px;
+            display: flex; align-items: center; justify-content: center; border-radius: 8px;
+        }
+
+        .badge {
+            background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 99px;
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;
+        }
+
+        .studio-credit {
+            margin-top: 24px; padding-top: 16px; font-size: 0.65rem; font-weight: 800;
+            color: #cbd5e1; letter-spacing: 0.3em; text-transform: uppercase; transition: all 0.4s ease;
+        }
+        .studio-credit:hover { color: var(--primary-blue); letter-spacing: 0.4em; }
+
+        .detected-tag {
+            font-size: 0.6rem;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-left: auto;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="wrapper">
+        <div class="glass-container">
+            <div class="logo-box">
+                <div class="absolute inset-0 bg-blue-100 rounded-3xl animate-pulse opacity-20"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+
+            <div class="badge">Live & Secure</div>
+            <h1 class="text-2xl font-extrabold text-slate-900 mb-1 tracking-tight">Attendance Pro</h1>
+            <p class="text-blue-600 font-semibold text-xs mb-8">Build 6.15.57 Platinum Edition</p>
+
+            <div class="mb-8">
+                <div class="step-pill">
+                    <span class="step-num">1</span>
+                    <div>
+                        <p class="text-[12px] font-bold text-slate-800">Automatic Detection</p>
+                        <p class="text-[10px] text-slate-500" id="detect-msg">Scanning hardware architecture...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button id="btn-x64" onclick="handleDownload('x64')" class="download-btn btn-secondary group">
+                    <div class="flex items-center gap-2 w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span class="text-sm">Download for x64</span>
+                        <span id="tag-x64" class="detected-tag hidden">Recommended</span>
+                    </div>
+                </button>
+
+                <button id="btn-x32" onclick="handleDownload('x32')" class="download-btn btn-secondary group">
+                    <div class="flex items-center gap-2 w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span class="text-sm">Download for x32</span>
+                        <span id="tag-x32" class="detected-tag hidden">Recommended</span>
+                    </div>
+                </button>
+            </div>
+
+            <div class="mt-8 pt-5 border-t border-slate-100">
+                <p class="text-[9px] text-slate-400 font-bold tracking-[0.2em] uppercase mb-1">Verified Publisher • 100 MB</p>
+                <p class="text-[9px] text-slate-300">Windows 10 / 11 Supported</p>
+            </div>
+
+            <div class="studio-credit">Made by ATStudios</div>
+        </div>
+    </div>
+
+    <div id="download-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-xl" onclick="closeModal()"></div>
+        <div class="bg-white rounded-[32px] p-10 max-w-sm w-full relative z-[110] shadow-3xl text-center border border-white">
+            <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="font-extrabold text-xl mb-2 text-slate-900">Get Ready!</h3>
+            <p class="text-slate-500 text-xs mb-8" id="modal-text">Initializing...</p>
+            <button onclick="closeModal()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition-all">Acknowledge</button>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION: Put your Google Drive File IDs here
+        const GDriveLinks = {
+            x64: "1OOaHa2FTxPxcEUsqcubfdYNjn5u8Y32y", 
+            x32: "1qwfhvZiSe2LviMiNYugtANthaNHikQtu"
+        };
+
+        window.onload = function() {
+            const is64Bit = navigator.userAgent.includes("x64") || 
+                           navigator.userAgent.includes("WOW64") || 
+                           navigator.platform.includes("Win64");
+
+            const btn64 = document.getElementById('btn-x64');
+            const btn32 = document.getElementById('btn-x32');
+            const tag64 = document.getElementById('tag-x64');
+            const tag32 = document.getElementById('tag-x32');
+            const msg = document.getElementById('detect-msg');
+
+            if (is64Bit) {
+                btn64.classList.replace('btn-secondary', 'btn-primary');
+                tag64.classList.remove('hidden');
+                msg.innerText = "Modern x64 hardware detected.";
+            } else {
+                btn32.classList.replace('btn-secondary', 'btn-primary');
+                tag32.classList.remove('hidden');
+                msg.innerText = "Legacy x32 hardware detected.";
+            }
+        };
+
+        function handleDownload(arch) {
+            const fileId = GDriveLinks[arch];
+            
+            // Construct direct download link
+            const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+            // Trigger actual download
+            window.location.href = downloadUrl;
+
+            // Show confirmation UI
+            const modal = document.getElementById('download-modal');
+            const modalText = document.getElementById('modal-text');
+            modalText.innerText = `AttendancePro_v6.15.57_${arch}.exe is now downloading via Secure Cloud.`;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('download-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
